@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.0.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '7.5.0',
+    exturl: false,
+    sidebar: {"position":"right","width":320,"display":"post","offset":12,"onmobile":true},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="ERP系统实战篇：物料编码的经验浅谈摘自“今日头条”导读：对于制造企业而言，物料管理的地位是不言而喻的。成千上万种物料，如果没有可做唯一标示的物料代号，而仅靠物料名称或者其它途径作管理依据，很难想象企业如何合理管理物料。 物料的名称、规格等都不能作为区别物料的标示，同名同规格的物料总是存在的。要实现物料的科学管理，物料编码是基础。 　　为了对物料实现统一编码，许多企业特别是大中型企业，通常设有独立">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Filemaker ERP">
+<meta property="og:url" content="https://www.filemakererp.cn/2020/02/04/ERP%E7%B3%BB%E7%BB%9F%E5%AE%9E%E6%88%98%E7%AF%87%EF%BC%9A%E7%89%A9%E6%96%99%E7%BC%96%E7%A0%81%E7%9A%84%E7%BB%8F%E9%AA%8C%E6%B5%85%E8%B0%88%202/index.html">
+<meta property="og:site_name" content="Filemaker ERP">
+<meta property="og:description" content="ERP系统实战篇：物料编码的经验浅谈摘自“今日头条”导读：对于制造企业而言，物料管理的地位是不言而喻的。成千上万种物料，如果没有可做唯一标示的物料代号，而仅靠物料名称或者其它途径作管理依据，很难想象企业如何合理管理物料。 物料的名称、规格等都不能作为区别物料的标示，同名同规格的物料总是存在的。要实现物料的科学管理，物料编码是基础。 　　为了对物料实现统一编码，许多企业特别是大中型企业，通常设有独立">
+<meta property="og:locale">
+<meta property="og:image" content="http://p9.pstatp.com/large/dfic-imagehandler/68ef5bbe-9086-4089-9e8b-5e10e922c24f">
+<meta property="og:image" content="http://p1.pstatp.com/large/pgc-image/98c1fddd9ddb47f19adb019491e23528">
+<meta property="article:published_time" content="2020-02-04T02:09:28.000Z">
+<meta property="article:modified_time" content="2020-02-04T02:15:23.000Z">
+<meta property="article:author" content="Roger Lau">
+<meta property="article:tag" content="filemaker,erp,claris,Database">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://p9.pstatp.com/large/dfic-imagehandler/68ef5bbe-9086-4089-9e8b-5e10e922c24f">
+
+<link rel="canonical" href="https://www.filemakererp.cn/2020/02/04/ERP%E7%B3%BB%E7%BB%9F%E5%AE%9E%E6%88%98%E7%AF%87%EF%BC%9A%E7%89%A9%E6%96%99%E7%BC%96%E7%A0%81%E7%9A%84%E7%BB%8F%E9%AA%8C%E6%B5%85%E8%B0%88%202/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title> | Filemaker ERP</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Filemaker ERP</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">一个Filemaker初学者的笔记</p>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh">
+    <link itemprop="mainEntityOfPage" href="https://www.filemakererp.cn/2020/02/04/ERP%E7%B3%BB%E7%BB%9F%E5%AE%9E%E6%88%98%E7%AF%87%EF%BC%9A%E7%89%A9%E6%96%99%E7%BC%96%E7%A0%81%E7%9A%84%E7%BB%8F%E9%AA%8C%E6%B5%85%E8%B0%88%202/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Roger Lau">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Filemaker ERP">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2020-02-04 10:09:28 / Modified: 10:15:23" itemprop="dateCreated datePublished" datetime="2020-02-04T10:09:28+08:00">2020-02-04</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="ERP系统实战篇：物料编码的经验浅谈"><a href="#ERP系统实战篇：物料编码的经验浅谈" class="headerlink" title="ERP系统实战篇：物料编码的经验浅谈"></a>ERP系统实战篇：物料编码的经验浅谈</h1><p>摘自“今日头条”<br>导读：对于制造企业而言，物料管理的地位是不言而喻的。成千上万种物料，如果没有可做唯一标示的物料代号，而仅靠物料名称或者其它途径作管理依据，很难想象企业如何合理管理物料。</p>
+<p>物料的名称、规格等都不能作为区别物料的标示，同名同规格的物料总是存在的。要实现物料的科学管理，物料编码是基础。</p>
+<p>　　为了对物料实现统一编码，许多企业特别是大中型企业，通常设有独立的物料编码机构，或组织专项编码培训班等。但往往实践证明，相关的执行部门最终还是没有严格按照物料编码的规则执行，工作也没有达到预想中的效果。物料编码和企业标准化工作也息息相关，很多企业在推行标准化（模块化设计）工作中，花费了大量的人力和物力，又是抽调骨干队伍，又是收集图纸、制定标准，一干就是好几年。但最后，往往又是无疾而终。物料编码，是一件简单的事情，但绝对不是一件容易做好的事情；是一件重要且有意义的事情，但绝对不是每家企业都能做好的事情。</p>
+<p>ERP系统实战篇：物料编码的经验浅谈</p>
+<p>一、物料编码的功能</p>
+<p>　　物料编码是以简短的文字、符号或数字、号码来代表物料、品名、规格或类别及其它有关事项的一种管理工具。在物料极为单纯、物料种类极少的工厂或许有没有物料编码都无关紧要，但在物料多到数百种或数千、数万种以上的工厂，物料编码就显得格外重要了。此时，物料的领发、验收，请购、跟催、盘点、储存等工作极为频紧，而借着物料编码，使各部门提高效率，各种物料数据传递迅速、意见沟通更加容易。物料编码之功能如下：</p>
+<p>　　1、增强物料数据的正确性；</p>
+<p>　　物料的领发、验收、请购、跟催、盘点、储存、记录等一切物料之活动均有物料编码可以查核，因此物料数据更加正确。至于一物多名，一名多物或物名错乱之现象不致于发生。</p>
+<p>　　2、提高物料管理的工作效率；</p>
+<p>　　物料既有系统的排列，以物料编码代替文字的记述，物料管理简便省事，效率因此提高。</p>
+<p>　　3、利于计算机的管理；</p>
+<p>　　物料管理在物料编码推行彻底之后，方能进一步利用计算机作更有效的处理，以达到物料管理之效果。</p>
+<p>　　4、降低物料库存、降低成本；</p>
+<p>　　物料编码利于物料库存量的控制，同时利于呆料的防止，并提高物料管理工作的效率，因此可减轻资金的积压，降低成本。</p>
+<p>　　5、防止物料舞弊事件之发生；</p>
+<p>　　物料一经编码后，物料记录正确而迅速，物料储存井然有序，可以减少舞弊事件之发生。</p>
+<p>　　6、便于物料之领用；</p>
+<p>　　库存物料均有正确的统一的名称及规格予以编码。对用料部门的领用以及物料仓库的发料都十分方便。</p>
+<p>　　7、便于压缩物料的品种、规格。</p>
+<p>　　对物料进行编码时，可以对某些性能相近或者相同的物料进行统一、合并和简化，压缩物料的品种、规格。</p>
+<p>二、物料编码的误区</p>
+<p>　　图号作为物料编码</p>
+<p>　　随着信息化的不断推进，当前大部分的中国企业都在使用CAD等辅助设计系统。由于设计管理规范的要求，每张图纸都会有一个图号，于是大部分的企业直接使用图号作为物料的编码。但使用图号作为物料编码，会存在如下问题：</p>
+<p>　　1、由于技术部门并不负责原材料的管理，原材料就没有图号；</p>
+<p>　　2、图号并不唯一；</p>
+<p>　　很多使用图号作为物料编码的企业，他们一直认为这是比较合理的。图号能够表述物料的唯一性吗？他们认为：“可以……但是，极个别的不能。”为什么极个别的不能？同样一张设计图纸，可以使用不锈钢制造，也可以使用镀锌板制造，两种不同的原材料制造出来的产品，我们能够说是一样的吗？但他们的图号确实就是一样的。</p>
+<p>　　3、图号的管理本身不规范；</p>
+<p>　　大部分的研发部门对于图号的编码管理本身就不严谨。不同的设计人员、不同的设计小组遵循的编码规则并不相同，导致后续使用图号的混乱，图号作为物料编码就更加不合适了。因</p>
+<p>　　要求物料编码表述大量的信息</p>
+<p>　　部分企业由于缺乏物料编码的经验，在制定编码规则的时候，往往希望制定出一套万能的、一见到编码就可以知道物料所有情况的规则。包括物料种类、属性、供应商信息，甚至包括存放仓库的信息。这些对于编码的过高期望，都是由于没有编码制定经验造成的。期望越高，失望就越大。编码就是编码，它无法表达其根本无法承载的过多信息。</p>
+<p>　　把制定编码规则的工作交给个别人或部门去完成</p>
+<p>　　企业的管理层往往习惯把编码工作交给技术部门或者某个资深员工来主持完成。这种做法忽略了一点，编码真正使用最多的是物料管理部门、财务部门，而非制定编码规则的技术部门。制定物料编码，应该联合技术部门、物料管理部门、财务门，组成制定团队共同完成。</p>
+<p>三、物料编码的原则</p>
+<p>　　物料编码必须合乎物料编码的原则，合理的物料编码，必须具备下列基本原则：★简单性 ★分类展开性 ★完整性 ★单一性 ★一贯性 ★可伸缩性 ★组织性 ★适应计算机管理 ★充足性。</p>
+<p>ERP系统实战篇：物料编码的经验浅谈<br><img src="http://p9.pstatp.com/large/dfic-imagehandler/68ef5bbe-9086-4089-9e8b-5e10e922c24f"><br>　　1、简单性</p>
+<p>　　编码的目的在于将物料化繁为简，便于物料的管理，如果编码过于繁杂，则违反了编码之目的。因切此物料编码在应用文字元号或数字上应力求简单明了，这样可节省阅读、填写、抄录的时间与手续，并可减少其中的错误机会。</p>
+<p>　　2、分类展开性</p>
+<p>　　物料复杂，物料编码大分类后还要加以细分，如果采用阿拉伯数字十进制，则每段最多只能由十个细分的项目，如果采用英文字母，则每段有26个细分项目，然而细分项目太多，就难于查找，而细分项目太少，则分类展开太慢，分类细分项目通常以五至九个较佳。例如采用阿拉伯数字十进制，有十八个项目时，其分类展开可以利用下列方法。</p>
+<p>　　3、完整性</p>
+<p>　　在物料编码时，所有的物料都应有物料编码可归，这样物料编码才能完整。若有些物料找不到赋予之物料编码，则很显然物料编码缺乏完整性。新产品新物料的产生容易破坏物料编码的完整性。因此每当有新物料产生，即应赋予新的物料编码，并规定新的物料没有编码，采购部门不得从事采购，即使没物料编码的新物料采购进来了，仓库部门或会计部门发现物料订购单缺少物料编码，即应请采购部门补填物料编码，否则不予入库、不予付款。这样才能确保物料编码的完整性。</p>
+<p>　　4、单一性</p>
+<p>　　物料编码的单一性是指一个物料编码只能代表一种物料，同一种物料只能找到一个物料编码，而绝无一个物料有数个物料编码，或一个物料编码有数项物料，一般地，只要物料的物理或化学性质有变化、只要物料要在仓库中存储、就必须为其指定一个编码，举例，如某零件要经过冲压成型、钻孔、喷漆三道工序才能完成。如果该物料的三道工序都在同一车间完成，不更换加工单位，即冲压成型后立即进行钻孔，紧接着进行喷漆，中间没有入库、出库处理，则该物料可取一个代码。如果该物料的三道工序不在同一个车间完成，其顺序是冲压、入库、领料、钻孔、入库、领料、喷漆、入库，则在库存管理中为了区分该物料的三种状态，必须取不同的物料编码。例：3000A,3000B,3000C三个编码分别表示三种不同加工状态的物料。</p>
+<p>　　5、一贯性</p>
+<p>　　物料编码要统一而有一贯性，如以年限分类为标准时，就应一直沿用下去，在中途不能改变用籍贯或姓氏别来分类，若要这么做必须要分段或分级进行。</p>
+<p>　　6、伸缩性</p>
+<p>　　物料编编码要考虑到未来新产品发展以及产品规格的变更而发生物料扩展或变动的情形。预留物料的伸缩余地，并不能仅就目前物料的现状加以物料编码的安排，否则他日新物料产生时，就有新物料无号可编的情况。</p>
+<p>　　7、组织性</p>
+<p>　　物料编码依其编码的系统，作井然有序的组织与排列，以便随时可从物料编码查知某项物料帐卡或数据。物料编码的组织性，对物料管理可以省掉不必要的麻烦。</p>
+<p>　　8、适应电脑管理</p>
+<p>　　电脑的应用已经比较普及，因此在编码时一定要考虑录入的方便性,如编码尽可能短、少使用其它符号，如‘#’、‘-’、‘*’等。</p>
+<p>　　9、充足性</p>
+<p>　　物料编码所采用的文字、记号或数字，必须有足够的数量，以便所组成的个别物料编码，足以代表所有个别物料，以及应付将来物料扩展时的实际需要，以免遇有特殊物料时无号可编。否则物料系统被破坏，费时误事。</p>
+<p>　　10、易记性</p>
+<p>　　在不影响上述九项原则之下，物料编码应选择易于记忆的文字、符号或数字，或赋予暗示及联想性。但这原则是属于次要原则，若上述九项原则俱全而独缺乏此项原则的物料编码，仍不失为优秀的物料编码。</p>
+<p>四、物料编码的技巧</p>
+<p>　　1、编码规则需尽可能反映物料大类。</p>
+<p>　　物料大类可以让我们对物料的类别有一个直接的判断。比如我们每天都在使用移动电话，如果我们看到139号段的号码，就知道是移动的来电。大类的划分原则往往是：第一码：产成品、半成品、原材料、辅料、低值易耗，主要供财务使用；第二码：真正的类别，依据企业不同的情况具体制定。</p>
+<p>　　2、编码需要长短适中。</p>
+<p>　　按照人的记忆习惯，7-13位的编码是比较合理的。</p>
+<p>　　3、尽量不要使用有特别意义的编码。</p>
+<p>　　很多物料编码的初衷是为了清晰明了地表述物料，如将钢板编码成GB，简单易懂。但随着物料种类的增加，以GB编码的物料也不再仅限于“钢板”，“钢笔”就以GB命名。</p>
+<p>　　4、避免使用难以交流和区别的字符。</p>
+<p>　　文字代表了中华民族博大精深的文化，拼音更被誉为世界上最复杂的字符之一。如果单纯通过拼音字母，如G和J，很大部分人会因为不标准的发音而难以进行区分。另外，字母L的小写打印出来以后和数字1没有区别，O打印出来后和数字0没有区别等等。我们在制定编码规则过程中，要尽量避免使用这些容易产生混淆的字符。</p>
+<p>　　5、不要把可能变动的信息编入编码。</p>
+<p>　　什么是可能变动的信息？举个最简单的例子，现在很多企业将员工编码规则定为：部门号+流水码。笔者认为这是最不合理的编码，员工如果发生人事变动或者岗位变换，编码就无法准确表述其所在部门。如果员工的人事和岗位变动频繁了，编码反而成为企业的困扰。</p>
+<p>ERP系统实战篇：物料编码的经验浅谈</p>
+<p>五、物料编码如何有效推行<br><img src="http://p1.pstatp.com/large/pgc-image/98c1fddd9ddb47f19adb019491e23528"></p>
+<p>　　很多企业在花费了大量的人力、物力和财力制定出一套科学的、合乎企业实际情况的物料编码体系后，就像他们制定的其他厚厚的管理制度文件一样，被锁进了黑暗的文件柜中，仅仅在进行相关质量体系认证时拿出来使用。当然，有同行过来参观的时候，也会时常拿出来进行炫耀。</p>
+<p>　　制定完善的物料编码规则只是物料编码工作的第一步。如何使制定的编码规则在企业内部真正得到推行，改善和解决技术、物管、财务等部门各自为政、多套编码并存、多种物料称谓混乱等企业管理问题，才是物料编码工作中最实质性的一步。有效推行企业的物料编码工作有两种途径：</p>
+<p>　　1、实施软件管理系统</p>
+<p>　　实施ERP等信息化软件系统，是在系统中固化物料编码，实现强制推行的最容易也最有效的方式。ERP系统会按照企业制定的物料编码规则，自动生成编码。ERP系统具备的便捷的查询、排序等功能，也可以让员工快速体验统一编码带来的效益，进而积极配合编码工作的执行。合理的编码规则结合ERP、PDM系统中的查询、排序功能，对于企业标准化工作的推行会起到直接的积极影响。</p>
+<p>　　2、设定专人负责编码</p>
+<p>　　如果企业尚不具备实施ERP、PDM等信息化系统的条件，要实现物料编码规则的贯彻执行，唯一的办法就是通过制定物料控制流程，设定专人控制物料编码。在流程的执行过程中，严格遵守物料编码唯一出口原则。</p>
+<p>　　企业制定出来的物料编码规则得不到真正有效推行，究其原因，在推行组织机构的设定、物料编码流程的执行等方面一定有不到位的地方。因此设定专人负责物料，不失为有效地办法。</p>
+<p>附录：解析物料需求计划的概念和特点</p>
+<p>ERP系统实战篇：物料编码的经验浅谈</p>
+<p>　　MRP是根据何时主生产计划表上需要物料来决定订货和生产,从理论上来看,是比较占优势的一种方法。</p>
+<p>物料需求计划的概念</p>
+<p>　　物料是一个广义的概念,它不仅仅指原材料而言,而是包含原材料、自制品(零部件)、成品、外购件和服务件(备品备件)这个更大范围的物料。因此,这是一个广义的物料。对于各种物料的管理并非仅仅是对物料的库存管理,而是包括建立科学的、系统的物料需求计划;协调和控制各部门适当数量的物料。在物料管理中,一方面要满足生产过程中的物料的充分供应,保证生产过程的连续进行而不发生中断;另一方面又要控制物料储备量的限度,减少所占用的流动资金,加速资金周转,降低产品成本。我们已经了解物料管理中的订货点方法是根据需要量,提前期和安全库存来维护需求而决定何时订货。物料管理中另一种方法是物料需求计划方法。</p>
+<p>　　物料需求计划MRP(Material Requirements Planning)是60年代在美国出现,70年代发展起来的一种管理技术和方法。MRP是根据何时主生产计划表上需要物料来决定订货和生产,从理论上来看,是比较占优势的一种方法。但是,在计算机应用之前,人工需用6～13个星期计算物料需要量,因此也只能按季度订货,这样的话,MRP方法也不见得比订货点方法优越。然而,应用计算机之后,情况就大不同了,计算物料需求量的时间被缩短至1～2天,订货日期短、订货过程快,可以由每季订货改为每月。因此,MRP成为人们公认的物料管理的好方法。随着计算机计算能力的增强,许多企业每个星期重新研究订货量,这种根据实际情况进行计算的能力使订货期缩短为每个星期。这样,物料的”需求期”更加明确,经过了大约十年,人们渐渐感觉到订货必须按照主生产计划才能更有效。人们逐渐地认识到,主生产计划应该是代表工厂中真正能生产的物料,才能保证物料需求计划中计算出有用的需求日期。如果主生产计划表上有许多不可能生产的物料或者因为原料缺乏而不能进行制造的物料,MRP便不能发挥作用了。然而,根据缺料情况计算出来的缺料表确是一个实用的MRP。因此,也就有了所谓的优先计划。</p>
+<p>　　缺料表的理论是基本而实用的。从主生产计划上可以了解工厂将要生产什么,然后从物料清单查出所要的物料,根据所要的物料查核物料库存量,列出一张缺料表。</p>
+<p>　　如果使用计算机进行以上工作,把主生产计划输入至计算机中,物料清单和库存量分别储存在数据库中,经过计算机计算,便可以输出一份完整的物料需求计划了。物料需求计划方法克服了许多缺料表使用上的难题:计划的期限能延伸至1～2年,计划的周期可以每周、每天或者是随机的;计划变动的修改方便灵活。在制造业里,缺料表才是真正的计划系统。人们可以预测未来一年里会有什么物料短缺。虽然主生产计划表还是会有改变,但是物料需求计划有可能跟着改变,解决未来的物料短缺不是等到短缺发生后再进行,而是事先根据MRP的计算而产生一份计划表了,这样就降低了库存量,压缩库存资金,降低成本。</p>
+<p>　　计算机使物料需求计划成为一个可行的系统,这个系统的基本逻辑是:</p>
+<p>　　我们将制造什么?(按主生产计划制造)；</p>
+<p>　　用什么东西来制造?(根据物料清单)；</p>
+<p>　　我们具备些什么?(库存)；</p>
+<p>　　我们还需要些什么?(生产计划和采购计划)；</p>
+<p>　　MRP的基本原理是:根据需求和预测来测定未来物料供应和生产计划与控制的方法。它提供了物料需求的准确时间和数量。</p>
+<p>　　并非所有的不使用订货点方法的物料管理都是属于MRP系统,因为MRP系统并不是仅仅代替订货点方法开订单的库存管理系统,而是一种能提供物料计划及控制库存,决定订货优先度,根据产品的需求自动地推导出构成这些产品的零件与材料的需求量,由产品的交货期展开成零部件的生产进度日程和原材料与外购件的需求日期,即将生产计划转换为物料需求表,并能为能力需求计划提供信息的系统。应用MRP系统必须要决定物料的毛需求量和净需求量,可先将物料的毛需求量转化为净需求量,从而进行毛需求量的净化过程,然后根据净需求量和需求时间预先排定订单,以便事先了解缺料情况。</p>
+<p>　　使用MRP系统对于已经具有一定生产能力的工厂来说,可以借助系统掌握在已知生产能力情况下能生产些什么;对于已经具有已定主生产计划的工厂来说,可以借助系统明确应生产些什么。MRP系统不仅给出订单数量,而且特别强调需要的时间,因此,系统的输出可以作为采购,生产等工厂中各项管理的输入,它是各项管理的基础。</p>
+<p>物料需求计划的特点</p>
+<p>　　When、What、How many几个词代表了物料需求计划MRP的精华所在,意思是什么时间、需要什么和需要多少。它们不仅从数量上解决了缺料问题,更重要的是从时间上来解决缺料问题,因此,物料信息的时间阶段化是MRP的主要特点,划分物料信息时间界面称为时间阶段化。</p>
+<p>　　在以往的物料管理中,使用台帐或货卡来登录各种物料信息,物料的情况可以用以下公式来计算: X=A+B-C</p>
+<p>　　式中:A表示现有库存</p>
+<p>　　B表示计划收到</p>
+<p>　　C表示需求量</p>
+<p>　　X表示可用数量</p>
+<p>　　其中计划收到B为已订购数量,需求量C可根据如下情况而定,若是成品可通过客户订单和产品结构的用料消耗计算而得,若是备品备件可通过预测而得。假设现有库存为30,计划收到为50,需求量为65,根据计算可以得到可用数量为15。假设现有库存为30,计划收到为25,需求量为65,根据计算可以得到可用数量为-10。</p>
+<p>　　A—现有库存 30或</p>
+<p>　　B—计划收到 50或</p>
+<p>　　C—需求量 65或</p>
+<p>　　X—可用数量 15 -10</p>
+<p>　　当可用数量X为正值时,说明此物料不需订货;反之,当可用数量X为负值时,说明此种物料库存量不足,应进行订货。以上方法解决了需要什么物料和需要多少物料的问题,即解决了What和How many,至于什么时间需要,是否一次订货还是分期订货,什么时间到货,何时可能断档,何时订货,物料何时发放等许多围绕着时间而提出的问题,则只能凭管理人员的经验估计和推测。</p>
+<p>　　时间阶段化的物料管理与非时间阶段化的物料管理在信息需求,信息处理以及信息存贮方面都有很大的差异。对于同一物料信息,相比之下,时间阶段化物料信息量多,这是由于非时间阶段化只有数量的更新而无时间更新,而时间阶段化有数量更新,还有时间更新,因而信息处理工作量大,而且需要及时,并且采用人工方法处理不能适应要求,只有采用计算机来进行处理。这也就是物料需求计划MRP的实现必然依赖于计算机的道理。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+                <a href="/2020/02/04/ERP%E7%B3%BB%E7%BB%9F%E5%AE%9E%E6%88%98%E7%AF%87%EF%BC%9A%E7%89%A9%E6%96%99%E7%BC%96%E7%A0%81%E7%9A%84%E7%BB%8F%E9%AA%8C%E6%B5%85%E8%B0%88/" rel="next" title="">
+                  <i class="fa fa-chevron-left"></i> 
+                </a>
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+                <a href="/2020/02/05/10.4%20%E7%95%AA%E5%A4%96%E7%AF%87%EF%BC%9A%E6%A1%88%E4%BE%8B%E8%A7%A3%E6%9E%90%20FileMaker%2018%20%E5%8F%91%E9%80%81%20HTML%20%E9%82%AE%E4%BB%B6%202/" rel="prev" title="">
+                   <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#ERP%E7%B3%BB%E7%BB%9F%E5%AE%9E%E6%88%98%E7%AF%87%EF%BC%9A%E7%89%A9%E6%96%99%E7%BC%96%E7%A0%81%E7%9A%84%E7%BB%8F%E9%AA%8C%E6%B5%85%E8%B0%88"><span class="nav-number">1.</span> <span class="nav-text">ERP系统实战篇：物料编码的经验浅谈</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Roger Lau</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">67</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+  </nav>
+</div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://www.filemakererp.cn/" title="https:&#x2F;&#x2F;www.filemakererp.cn">Title</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Roger Lau</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> v5.0.2
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> v7.5.0
+  </div>
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

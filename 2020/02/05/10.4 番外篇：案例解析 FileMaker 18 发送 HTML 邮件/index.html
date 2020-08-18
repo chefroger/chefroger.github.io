@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.0.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '7.5.0',
+    exturl: false,
+    sidebar: {"position":"right","width":320,"display":"post","offset":12,"onmobile":true},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="10.4 番外篇：案例解析 FileMaker 18 发送 HTML 邮件这是案例解析 FileMaker 18 新功能的最后一篇，我们来聊一下用增强的“从 URL 插入”脚本来实现发送 HTML 邮件的功能。案例下载链接：https:&#x2F;&#x2F;pan.baidu.com&#x2F;s&#x2F;1b9YtViVMlWRtPHrUsBwpKA  密码:vfsv从 URL 插入新增功能发送邮件对于 FileMaker 来说并">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Filemaker ERP">
+<meta property="og:url" content="https://www.filemakererp.cn/2020/02/05/10.4%20%E7%95%AA%E5%A4%96%E7%AF%87%EF%BC%9A%E6%A1%88%E4%BE%8B%E8%A7%A3%E6%9E%90%20FileMaker%2018%20%E5%8F%91%E9%80%81%20HTML%20%E9%82%AE%E4%BB%B6/index.html">
+<meta property="og:site_name" content="Filemaker ERP">
+<meta property="og:description" content="10.4 番外篇：案例解析 FileMaker 18 发送 HTML 邮件这是案例解析 FileMaker 18 新功能的最后一篇，我们来聊一下用增强的“从 URL 插入”脚本来实现发送 HTML 邮件的功能。案例下载链接：https:&#x2F;&#x2F;pan.baidu.com&#x2F;s&#x2F;1b9YtViVMlWRtPHrUsBwpKA  密码:vfsv从 URL 插入新增功能发送邮件对于 FileMaker 来说并">
+<meta property="og:locale">
+<meta property="og:image" content="https://s2.ax1x.com/2020/02/05/1sFToj.png">
+<meta property="og:image" content="https://s2.ax1x.com/2020/02/05/1sF4OS.png">
+<meta property="og:image" content="https://s2.ax1x.com/2020/02/05/1sFIeg.png">
+<meta property="og:image" content="https://s2.ax1x.com/2020/02/05/1sFowQ.png">
+<meta property="article:published_time" content="2020-02-05T08:12:21.000Z">
+<meta property="article:modified_time" content="2020-02-05T08:45:23.000Z">
+<meta property="article:author" content="Roger Lau">
+<meta property="article:tag" content="filemaker,erp,claris,Database">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://s2.ax1x.com/2020/02/05/1sFToj.png">
+
+<link rel="canonical" href="https://www.filemakererp.cn/2020/02/05/10.4%20%E7%95%AA%E5%A4%96%E7%AF%87%EF%BC%9A%E6%A1%88%E4%BE%8B%E8%A7%A3%E6%9E%90%20FileMaker%2018%20%E5%8F%91%E9%80%81%20HTML%20%E9%82%AE%E4%BB%B6/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title> | Filemaker ERP</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Filemaker ERP</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">一个Filemaker初学者的笔记</p>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh">
+    <link itemprop="mainEntityOfPage" href="https://www.filemakererp.cn/2020/02/05/10.4%20%E7%95%AA%E5%A4%96%E7%AF%87%EF%BC%9A%E6%A1%88%E4%BE%8B%E8%A7%A3%E6%9E%90%20FileMaker%2018%20%E5%8F%91%E9%80%81%20HTML%20%E9%82%AE%E4%BB%B6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Roger Lau">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Filemaker ERP">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2020-02-05 16:12:21 / Modified: 16:45:23" itemprop="dateCreated datePublished" datetime="2020-02-05T16:12:21+08:00">2020-02-05</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="10-4-番外篇：案例解析-FileMaker-18-发送-HTML-邮件"><a href="#10-4-番外篇：案例解析-FileMaker-18-发送-HTML-邮件" class="headerlink" title="10.4 番外篇：案例解析 FileMaker 18 发送 HTML 邮件"></a>10.4 番外篇：案例解析 FileMaker 18 发送 HTML 邮件</h1><p>这是案例解析 FileMaker 18 新功能的最后一篇，我们来聊一下用增强的“从 URL 插入”脚本来实现发送 HTML 邮件的功能。<br>案例下载链接：<a target="_blank" rel="noopener" href="https://pan.baidu.com/s/1b9YtViVMlWRtPHrUsBwpKA">https://pan.baidu.com/s/1b9YtViVMlWRtPHrUsBwpKA</a>  密码:vfsv<br><img src="https://s2.ax1x.com/2020/02/05/1sFToj.png" alt="1sFToj.png"><br>从 URL 插入新增功能<br>发送邮件对于 FileMaker 来说并不是什么陌生功能，专门就有发送邮件这个脚本来操作。不过我们这里谈的是带排版的 HTML 邮件，这才是 FileMaker 18 新增的功能。这个功能的实现是因为“从 URL 插入”脚本新增支持：smb、smtp、smtps、ldap 和 ldaps。其中 smtp&amp;smtps 就是发邮件的协议，前者为常规发件协议、后者为 SSL 加密的发件协议。比如，我们使用的 QQ 企业邮箱，就是通过 SSL 加密，所以必须使用 smtps 协议。</p>
+<p>选定协议之后，我们还需要了解 cURL 发邮件的配置选项。这主要包括：<br>–mail-from：发件人邮箱<br>–mail-rcpt：收件人邮箱<br>–upload-file：包含发件人、收件人、标题、邮件内容的 txt 文件<br>–user：“发件邮箱:密码”格式的用户名和密码<br>以上配置需要连接成一条文本，设置到“从 URL 插入”的“指定 cURL 选项”。<br><img src="https://s2.ax1x.com/2020/02/05/1sF4OS.png" alt="1sF4OS.png"></p>
+<p>需要特别注意的是 –upload-file 选项，这里是将发件人、收件人、标题、邮件内容合并成一个 txt 文本，并放置到容器中进行调用。文本格式如下（Content-Type和邮件内容之间需要留1行以上空行）：<br><img src="https://s2.ax1x.com/2020/02/05/1sFIeg.png" alt="1sFIeg.png"></p>
+<p>cURL 发送邮件的流程<br>具备上面部分的知识后，我们来在看一下如何在 FileMaker 中实现。<br>我们主要会用的脚本就是“从 URL 插入”，它一共有 5 个配置项。<br><img src="https://s2.ax1x.com/2020/02/05/1sFowQ.png" alt="1sFowQ.png"><br> 选择全部内容：这里是发送邮箱、不需要接收返回数据，所以勾不勾都不影响<br> 目标：就是将脚本返回的结果值保存在某个字段或变量，这里也不需要<br> 指定 URL：这里是如下样式的链接  smtp://smtp.example.com:465<br> 验证 SSL 证书：如果邮箱开启 SSL，需要勾选<br> 指定 cURL 选项：就是上文 –mail-from、–mail-rcpt、–upload-file &amp; –user拼接而成的文本。</p>
+<p>以上就是 FileMaker 18 发 HTML 邮件的新功能。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+                <a href="/2020/02/05/10.4%20%E7%95%AA%E5%A4%96%E7%AF%87%EF%BC%9A%E6%A1%88%E4%BE%8B%E8%A7%A3%E6%9E%90%20FileMaker%2018%20%E5%8F%91%E9%80%81%20HTML%20%E9%82%AE%E4%BB%B6%202/" rel="next" title="">
+                  <i class="fa fa-chevron-left"></i> 
+                </a>
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+                <a href="/2020/02/05/%E6%B3%A8%E6%84%8F%2010.2-10.4%E4%B8%89%E7%AF%87%E7%B3%BB%E4%BB%8E%E9%A3%9E%E6%B2%AB%E8%AF%BE%E8%AF%BE%E7%A8%8B%E4%B8%AD%E6%8B%B7%E8%B4%9D%EF%BC%8C%E4%BB%A5%E9%98%B2%E5%B0%8F%E9%B9%85%E9%80%9A%E5%80%92%E9%97%AD%E6%89%80%E5%81%9A%E7%9A%84%E4%B8%AA%E4%BA%BA%E5%A4%87%E4%BB%BD/" rel="prev" title="">
+                   <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#10-4-%E7%95%AA%E5%A4%96%E7%AF%87%EF%BC%9A%E6%A1%88%E4%BE%8B%E8%A7%A3%E6%9E%90-FileMaker-18-%E5%8F%91%E9%80%81-HTML-%E9%82%AE%E4%BB%B6"><span class="nav-number">1.</span> <span class="nav-text">10.4 番外篇：案例解析 FileMaker 18 发送 HTML 邮件</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Roger Lau</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">67</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+  </nav>
+</div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://www.filemakererp.cn/" title="https:&#x2F;&#x2F;www.filemakererp.cn">Title</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Roger Lau</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> v5.0.2
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> v7.5.0
+  </div>
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
